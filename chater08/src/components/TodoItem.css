@@ -1,0 +1,20 @@
+.TodoItem {
+  display: flex;
+  gap: 20px;
+  padding: 20px 0px;
+  border-bottom: 1px solid #e9e8e8;
+}
+
+.TodoItem > .content {
+  flex: 1;
+}
+
+.TodoItem > .date {
+  color: gray;
+}
+
+.TodoItem > Button {
+  border: none;
+  color: rgb(157, 157, 157);
+  border-radius: 5px;
+}
