@@ -1,5 +1,6 @@
 import "./App.css";
 import { Routes, Route, Link } from "react-router-dom";
+import { useReducer, useRef, createContext } from "react";
 
 import Home from "./pages/Home";
 import New from "./pages/New";
@@ -7,29 +8,91 @@ import Diary from "./pages/Diary";
 import Edit from "./pages/Edit";
 import NotFound from "./pages/NotFound";
 
-import ComButton from "./components/ComButton";
-import Header from "./components/Header";
+const mockData = [
+  {
+    id: 1,
+    createDate: new Date().getTime(),
+    emotionId: 1,
+    content: "1번 일기 내용",
+  },
+  {
+    id: 2,
+    createDate: new Date().getTime(),
+    emotionId: 2,
+    content: "2번 일기 내용",
+  },
+];
 
-import { getEmotionImage } from "./util/get-emotion-icon";
+function reducer(state, action) {
+  switch (action.type) {
+    case "CREATE":
+      return [action.data, ...state];
+    case "UPDATE":
+      return state.map((item) =>
+        String(item.id) === String(action.data.id) ? action.data : item
+      );
+    case "DELETE":
+      return state.filter((item) => item.id !== action.data.id);
+    default:
+      state;
+  }
+  return state;
+}
+
+export const DiaryStateContext = createContext();
+const DiaryDispatchContext = createContext();
 
 function App() {
+  const [data, dispatch] = useReducer(reducer, mockData);
+  const idRef = useRef(3);
+
+  // 새로운 일기 추가
+  const onCreate = (createDate, emotionId, content) => {
+    dispatch({
+      type: "CREATE",
+      data: {
+        id: idRef.current++,
+        createDate,
+        emotionId,
+        content,
+      },
+    });
+  };
+
+  // 기존 일기 수정
+  const onUpdate = (id, createDate, emotionId, content) => {
+    dispatch({
+      type: "UPDATE",
+      data: {
+        id,
+        createDate,
+        emotionId,
+        content,
+      },
+    });
+  };
+
+  // 기존 일기 삭제
+  const onDelete = (id) => {
+    dispatch({
+      type: "DELETE",
+      data: { id },
+    });
+  };
+
   return (
     <>
-      <Header
-        title="header"
-        leftChild={<ComButton text="left" />}
-        rightChild={<ComButton text="right" />}
-      />
-      <ComButton text="123" type="DEFAULT" />
-      <ComButton text="123" type="POSITIVE" />
-      <ComButton text="123" type="NAGATIVE" />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/new" element={<New />} />
-        <Route path="/diary/:id" element={<Diary />} />
-        <Route path="/edit/:id" element={<Edit />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <DiaryStateContext.Provider value={{ data }}>
+        <DiaryDispatchContext.Provider value={(onCreate, onUpdate, onDelete)}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/new" element={<New />} />
+            <Route path="/diary/:id" element={<Diary />} />
+            <Route path="/edit/:id" element={<Edit />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </DiaryDispatchContext.Provider>
+      </DiaryStateContext.Provider>
     </>
   );
 }
