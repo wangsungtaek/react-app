@@ -1,0 +1,34 @@
+.Editor {
+  section {
+    margin-bottom: 20px;
+
+    h4 {
+      font-size: 22px;
+      font-weight: bold;
+    }
+  }
+  .date_section input,
+  textarea {
+    background-color: rgb(236, 236, 236);
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    padding: 10px 20px;
+  }
+  .emotion_section .emotion_list_wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 2%;
+  }
+  .content_section textarea {
+    width: 100%;
+    padding: 20px;
+    min-height: 200px;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  .button_section {
+    display: flex;
+    justify-content: space-between;
+  }
+}
