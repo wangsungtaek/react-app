@@ -37,8 +37,9 @@ function reducer(state, action) {
       return state.map((item) =>
         String(item.id) === String(action.data.id) ? action.data : item
       );
-    case "DELETE":
-      return state.filter((item) => item.id !== action.data.id);
+    case "DELETE": {
+      return state.filter((item) => Number(item.id) !== Number(action.data.id));
+    }
     default:
       state;
   }
@@ -46,7 +47,7 @@ function reducer(state, action) {
 }
 
 export const DiaryStateContext = createContext();
-const DiaryDispatchContext = createContext();
+export const DiaryDispatchContext = createContext();
 
 function App() {
   const [data, dispatch] = useReducer(reducer, mockData);
@@ -89,7 +90,7 @@ function App() {
   return (
     <>
       <DiaryStateContext.Provider value={{ data }}>
-        <DiaryDispatchContext.Provider value={(onCreate, onUpdate, onDelete)}>
+        <DiaryDispatchContext.Provider value={{ onCreate, onUpdate, onDelete }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/new" element={<New />} />
