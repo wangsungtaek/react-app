@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useContext } from "react";
-import { DiaryDispatchContext, DiaryStateContext } from "../App";
+import { useContext } from "react";
+import { DiaryDispatchContext } from "../App";
+import useDiary from "../hooks/useDiary";
 
 import Header from "../components/Header";
 import Editor from "../components/Editor";
@@ -9,20 +10,10 @@ import ComButton from "../components/ComButton";
 
 const Edit = () => {
   const nav = useNavigate();
-  const [currentDiaryItem, setCurrentDiaryItem] = useState({});
-  const { data } = useContext(DiaryStateContext);
   const { onDelete, onUpdate } = useContext(DiaryDispatchContext);
   const { id } = useParams();
 
-  useEffect(() => {
-    const currentDiary = data.find((item) => String(item.id) === String(id));
-    if (!currentDiary) {
-      alert("존재하지 않는 일기입니다.");
-      nav("/", { replace: true });
-      return;
-    }
-    setCurrentDiaryItem(currentDiary);
-  }, [id, data]);
+  const currentDiaryItem = useDiary(id);
 
   const onClickDelete = () => {
     if (confirm("정말 일기를 삭제하시겠습니까?")) {

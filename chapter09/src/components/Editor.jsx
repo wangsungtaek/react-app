@@ -1,18 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { emotionList } from "../util/constants";
 
 import ComButton from "./ComButton";
 import "./Editor.css";
 
 import EmotionItem from "./emotionItem";
-
-const emotionList = [
-  { emotionId: 1, emotionName: "완전 좋음" },
-  { emotionId: 2, emotionName: "좋음" },
-  { emotionId: 3, emotionName: "그럭저럭" },
-  { emotionId: 4, emotionName: "나쁨" },
-  { emotionId: 5, emotionName: "끔찍함" },
-];
 
 const Editor = ({ initData, onSubmit }) => {
   const nav = useNavigate();
@@ -21,17 +14,13 @@ const Editor = ({ initData, onSubmit }) => {
     emotionId: 3,
     content: "",
   });
-  console.log("###Editor render", initData);
 
   useEffect(() => {
-    console.log("## diary", diary);
-
     if (
       typeof initData === "object" &&
       initData !== null &&
       Object.keys(initData).length > 0
     ) {
-      console.log("## initData", initData);
       setDiary({
         ...initData,
       });
