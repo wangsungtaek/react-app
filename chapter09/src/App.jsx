@@ -1,6 +1,6 @@
 import "./App.css";
 import { Routes, Route, Link } from "react-router-dom";
-import { useReducer, useRef, createContext } from "react";
+import { useReducer, useRef, createContext, useEffect } from "react";
 
 import Home from "./pages/Home";
 import New from "./pages/New";
@@ -8,50 +8,53 @@ import Diary from "./pages/Diary";
 import Edit from "./pages/Edit";
 import NotFound from "./pages/NotFound";
 
-const mockData = [
-  {
-    id: 1,
-    createDate: new Date("2024-11-13").getTime(),
-    emotionId: 1,
-    content: "1번 일기 내용",
-  },
-  {
-    id: 2,
-    createDate: new Date("2024-11-12").getTime(),
-    emotionId: 2,
-    content: "2번 일기 내용",
-  },
-  {
-    id: 3,
-    createDate: new Date("2024-10-13").getTime(),
-    emotionId: 3,
-    content: "3번 일기 내용",
-  },
-];
-
 function reducer(state, action) {
+  let nextState;
   switch (action.type) {
-    case "CREATE":
-      return [action.data, ...state];
-    case "UPDATE":
-      return state.map((item) =>
+    case "INIT": {
+      return action.data;
+    }
+    case "CREATE": {
+      nextState = [action.data, ...state];
+      break;
+    }
+    case "UPDATE": {
+      nextState = state.map((item) =>
         String(item.id) === String(action.data.id) ? action.data : item
       );
+      break;
+    }
     case "DELETE": {
-      return state.filter((item) => Number(item.id) !== Number(action.data.id));
+      nextState = state.filter(
+        (item) => Number(item.id) !== Number(action.data.id)
+      );
+      break;
     }
     default:
-      state;
+      nextState = state;
   }
-  return state;
+  localStorage.setItem("diary", JSON.stringify(nextState));
+  return nextState;
 }
 
 export const DiaryStateContext = createContext();
 export const DiaryDispatchContext = createContext();
 
 function App() {
-  const [data, dispatch] = useReducer(reducer, mockData);
-  const idRef = useRef(3);
+  const [data, dispatch] = useReducer(reducer, []);
+  const idRef = useRef(4);
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("diary");
+    if (!storedData) {
+      return;
+    }
+    const parsedData = JSON.parse(storedData);
+    dispatch({
+      type: "INIT",
+      data: parsedData,
+    });
+  }, []);
 
   // 새로운 일기 추가
   const onCreate = (createDate, emotionId, content) => {
